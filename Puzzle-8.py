@@ -17,11 +17,15 @@ pygame.display.set_caption("PUZZLE 8")
 White = (255, 255, 255)
 Black = (0, 0, 0)
 Gray = (200, 200, 200)
+Red = (255, 0, 0)
 Blue = (100, 100, 255)
 
 #Fuente
 font_title = pygame.font.Font(None, 74)
 font_button = pygame.font.Font(None, 30)
+font_small = pygame.font.Font(None, 30)
+
+
 
 #Dibujar Texto
 def draw_text(text, font, color, surface, x, y):
@@ -29,6 +33,70 @@ def draw_text(text, font, color, surface, x, y):
   text_rect = text_obj.get_rect()
   text_rect.center = (x, y)
   surface.blit(text_obj, text_rect)
+  return text_rect
+
+def draw_button(text, font, color, rect_color, surface, rect):
+  pygame.draw.rect(surface, rect_color, rect)
+  draw_text(text, font, color, surface, rect.centerx, rect.centery)
+
+def draw_table(matrix = (1,2,3,4,5,6,7,8,0)):
+  c00 = pygame.Rect(Width//2-150, 300, 100, 100)
+  c01 = pygame.Rect(Width//2-50, 300, 100, 100)
+  c02 = pygame.Rect(Width//2+50, 300, 100, 100)
+
+  c10 = pygame.Rect(Width//2-150, 400, 100, 100)
+  c11 = pygame.Rect(Width//2-50, 400, 100, 100)
+  c12 = pygame.Rect(Width//2+50, 400, 100, 100)
+
+  c20 = pygame.Rect(Width//2-150, 500, 100, 100)
+  c21 = pygame.Rect(Width//2-50, 500,100, 100)
+  c22 = pygame.Rect(Width//2+50, 500,100, 100)
+  
+  if matrix[0] != 0:
+    draw_button(f"{matrix[0]}", font_small, White, Blue, Screen, c00)
+  else: 
+    draw_button(f"{matrix[0]}", font_small, Red, Red, Screen, c00)
+  if matrix[1] != 0:
+    draw_button(f"{matrix[1]}", font_small, White, Blue, Screen, c01)
+  else: 
+    draw_button(f"{matrix[1]}", font_small, Red, Red, Screen, c01)
+  if matrix[2] != 0:
+    draw_button(f"{matrix[2]}", font_small, White, Blue, Screen, c02)
+  else: 
+    draw_button(f"{matrix[2]}", font_small, Red, Red, Screen, c02)
+  if matrix[3] != 0:
+    draw_button(f"{matrix[3]}", font_small, White, Blue, Screen, c10)
+  else: 
+    draw_button(f"{matrix[3]}", font_small, Red, Red, Screen, c10)
+  if matrix[4] != 0:
+    draw_button(f"{matrix[4]}", font_small, White, Blue, Screen, c11)
+  else: 
+    draw_button(f"{matrix[4]}", font_small, Red, Red, Screen, c11)
+  if matrix[5] != 0:
+    draw_button(f"{matrix[5]}", font_small, White, Blue, Screen, c12)
+  else: 
+    draw_button(f"{matrix[5]}", font_small, Red, Red, Screen, c12)
+  if matrix[6] != 0:
+    draw_button(f"{matrix[6]}", font_small, White, Blue, Screen, c20)
+  else: 
+    draw_button(f"{matrix[6]}", font_small, Red, Red, Screen, c20)
+  if matrix[7] != 0:
+    draw_button(f"{matrix[7]}", font_small, White, Blue, Screen, c21)
+  else: 
+    draw_button(f"{matrix[7]}", font_small, Red, Red, Screen, c21)
+  if matrix[8] != 0:
+    draw_button(f"{matrix[8]}", font_small, White, Blue, Screen, c22)
+  else: 
+    draw_button(f"{matrix[8]}", font_small, Red, Red, Screen, c22)
+  
+  #draw_button(f"{matrix[1]}", font_small, White, Blue, Screen, c01)
+  #draw_button(f"{matrix[2]}", font_small, White, Blue, Screen, c02)
+  #draw_button(f"{matrix[3]}", font_small, White, Blue, Screen, c10)
+  #draw_button(f"{matrix[4]}", font_small, White, Blue, Screen, c11)
+  #draw_button(f"{matrix[5]}", font_small, White, Blue, Screen, c12)
+  #draw_button(f"{matrix[6]}", font_small, White, Blue, Screen, c20)
+  #draw_button(f"{matrix[7]}", font_small, White, Blue, Screen, c21)
+  #draw_button(f"{matrix[8]}", font_small, White, Blue, Screen, c22)
 
 #Crear botones
 class Button:
@@ -104,46 +172,90 @@ def bfs8(tabla_i, tabla_f):
   #Ya revisamos todo los estados y no se consiguio respuesta
   return None
 
-def BFS():
-  tabla_inicial = generate_initial_array()
-  tabla_final = (
-    1, 2, 3,
-    8, 0, 4,
-    7, 6, 5
-  )
-  while True:
-    if tabla_inicial == tabla_final:
-      tabla_inicial = generate_initial_array()
-    else:
-      break
+tabla_inicial_auxB = None
+tiempoAuxB = 0
+visitedAuxB = 0
+solucionB = None
 
-  time_init = time.time()
-  solucion = bfs8(tabla_inicial, tabla_final)
-  time_end = time.time()
-  tiempo_transcurrido = time_end - time_init
+def BFS(active_f):
+  global solucionB
+  global tabla_inicial_auxB
+  global tiempoAuxB
+  global visitedAuxB
+  
+  if active_f:
+    tabla_inicial = generate_initial_array()
+    tabla_final = (
+      1, 2, 3,
+      8, 0, 4,
+      7, 6, 5
+    )
+    while True:
+      if tabla_inicial == tabla_final:
+        tabla_inicial = generate_initial_array()
+      else:
+        break
 
-  if solucion:
-    print("Solucion encontrada\n")
-    for i, sol in enumerate(solucion):
-      print(f"Paso: {i}")
-      for j in range(3):
-        print(sol[j*3:j*3+3])
+    time_init = time.time()
+    solucionB = bfs8(tabla_inicial, tabla_final)
+    time_end = time.time()
+    tiempo_transcurrido = time_end - time_init
+    tabla_inicial_auxB = tabla_inicial
+    tiempoAuxB = tiempo_transcurrido
+    visitedAuxB = visitados
+    if solucionB:
+      print("Solucion encontrada\n")
+      for i, sol in enumerate(solucionB):
+        print(f"Paso: {i}")
+        for j in range(3):
+          print(sol[j*3:j*3+3])
+        
+        print("=" * 10)
       
-      print("=" * 10)
-    
-    print(f"Cantidad de movimientos usados: {len(solucion) - 1}")
-    
-    print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
+      print(f"Cantidad de movimientos usados: {len(solucionB) - 1}")
+      
+      print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
 
-    print(f"Cantidad de nodos explorados: {len(visitados)}")
+      print(f"Cantidad de nodos explorados: {len(visitados)}")
 
-    
+      
+    else:
+      print("No se ha encontrado solucion para la siguiente tabla inicial")
+      print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
+      print(f"Cantidad de nodos explorados: {len(visitados)}")
+      for i in range(3):
+        print(tabla_inicial[i*3:i*3+3])
+  
+  #draw_text("BFS", font_title, Black, Screen, Width//2, 100)
+
+  if solucionB != None: 
+    for i, sol in enumerate(solucionB):
+      Screen.fill(White)
+      draw_text(f"Paso {i}", font_title, Black, Screen, Width//2, 100)
+      draw_text(f"Tiempo requerido: {tiempoAuxB:.4f}s", font_small, Black, Screen, Width//2, 130)
+      draw_text(f"Cantidad de movimientos usados: {len(solucionB) - 1}", font_small, Black, Screen, Width//2, 160)
+      draw_text(f"Cantidad de nodos explorados: {len(visitedAuxB)}", font_small, Black, Screen, Width//2, 190)
+      
+      draw_table(sol)
+      pygame.display.flip()
+      pygame.time.delay(1000)
+
+
   else:
-    print("No se ha encontrado solucion para la siguiente tabla inicial")
-    print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
-    print(f"Cantidad de nodos explorados: {len(visitados)}")
-    for i in range(3):
-      print(tabla_inicial[i*3:i*3+3])
+    draw_text(f"No se encontro solucion para la tabla", font_small, Black, Screen, Width//2, 100)
+    draw_text(f"Tiempo requerido: {tiempoAuxB:.4f}s", font_small, Black, Screen, Width//2, 130)
+    draw_text(f"Cantidad de nodos explorados: {len(visitedAuxB)}", font_small, Black, Screen, Width//2, 190)
+    draw_table(tabla_inicial_auxB)
+    pygame.display.flip()  
+    pygame.time.delay(6000)
+    pygame.quit()
+    exit()
+
+  for ev in pygame.event.get():
+    if ev.type == pygame.QUIT:
+      pygame.quit()
+      exit()
+
 
 
 
@@ -258,95 +370,158 @@ class Puzzle8:
   
   def get_visited(self):
     return self.visitados
-  
-def A_ast():
-  tabla_inicial = generate_initial_array()
-  tabla_final = (
-    1, 2, 3,
-    8, 0, 4,
-    7, 6, 5
-  )
 
-  while True:
-    if tabla_inicial == tabla_final:
-      tabla_inicial = generate_initial_array()
+tabla_inicial_auxA = None
+tiempoAuxA = 0
+visitedAuxA = 0
+solucionA = None
+def A_ast(active_f):
+  global solucionA
+  global tabla_inicial_auxA
+  global tiempoAuxA
+  global visitedAuxA
+  if active_f:
+    tabla_inicial = generate_initial_array()
+    tabla_final = (
+      1, 2, 3,
+      8, 0, 4,
+      7, 6, 5
+    )
+
+    while True:
+      if tabla_inicial == tabla_final:
+        tabla_inicial = generate_initial_array()
+      else:
+        break
+
+    A_ast = Puzzle8(tabla_final)
+    tabla_inicial_auxA = tabla_inicial
+    time_init = time.time()
+    solucionA = A_ast.solve(tabla_inicial)
+    time_end = time.time()
+    tiempo_transcurrido = time_end - time_init
+    tiempoAuxA = tiempo_transcurrido
+    visitedAuxA = A_ast.get_visited()
+    if solucionA:
+      for i, sol in enumerate(solucionA):
+        print(f"\nPaso {i}:")
+        A_ast.print_tabla(sol)
+        print("=" * 10)
+      
+      print(f"\nCantidad de movimientos usados: {len(solucionA) - 1}")
+      
+      print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
+
+      print(f"Cantidad de nodos explorados: {len(A_ast.get_visited())}")
+
     else:
-      break
-
-  A_ast = Puzzle8(tabla_final)
-
-  time_init = time.time()
-  solucion = A_ast.solve(tabla_inicial)
-  time_end = time.time()
-  tiempo_transcurrido = time_end - time_init
-
-  if solucion:
-    for i, sol in enumerate(solucion):
-      print(f"\nPaso {i}:")
-      A_ast.print_tabla(sol)
-      print("=" * 10)
+      print("\nNo se ha encontrado solucion")
     
-    print(f"\nCantidad de movimientos usados: {len(solucion) - 1}")
-    
-    print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
+      print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
 
-    print(f"Cantidad de nodos explorados: {len(A_ast.get_visited())}")
+      print(f"Cantidad de nodos explorados: {len(A_ast.get_visited())}")
+  
+  #draw_text("A*", font_title, Black, Screen, Width//2, 100)
+
+  if solucionA != None: 
+    for i, sol in enumerate(solucionA):
+      Screen.fill(White)
+      draw_text(f"Paso {i}", font_title, Black, Screen, Width//2, 100)
+      draw_text(f"Tiempo requerido: {tiempoAuxA:.4f}s", font_small, Black, Screen, Width//2, 130)
+      draw_text(f"Cantidad de movimientos usados: {len(solucionA) - 1}", font_small, Black, Screen, Width//2, 160)
+      draw_text(f"Cantidad de nodos explorados: {len(visitedAuxA)}", font_small, Black, Screen, Width//2, 190)
+      
+      draw_table(sol)
+      pygame.display.flip()
+      pygame.time.delay(1000)
+
 
   else:
-    print("\nNo se ha encontrado solucion")
+    draw_text(f"No se encontro solucion para la tabla", font_small, Black, Screen, Width//2, 100)
+    draw_text(f"Tiempo requerido: {tiempoAuxA:.4f}s", font_small, Black, Screen, Width//2, 130)
+    draw_text(f"Cantidad de nodos explorados: {len(visitedAuxA)}", font_small, Black, Screen, Width//2, 190)
+    draw_table(tabla_inicial_auxA)
+    pygame.display.flip()  
+    pygame.time.delay(6000)
+    pygame.quit()
+    exit()
+
+  for ev in pygame.event.get():
+    if ev.type == pygame.QUIT:
+      pygame.quit()
+      exit()  
+
+def compare_algorithms(active_f):
+  draw_text("BFS vs A*", font_title, Black, Screen, Width//2, 100)
+
+ # draw_table()
+
+  for ev in pygame.event.get():
+    if ev.type == pygame.QUIT:
+      pygame.quit()
+      exit()
   
-    print(f"Cantidad de tiempo requerido: {tiempo_transcurrido:.4f}s")
-
-    print(f"Cantidad de nodos explorados: {len(A_ast.get_visited())}")
-
-def compare_algorithms():
-  print("BFS vs A*")
-
 def Salir():
-  print("Salir")
   pygame.quit()
   exit()
 
-button_width = 250
-button_height = 70
-button_spacing = 30
 
-button_start_y = Height//2 - (button_height * 1.5 + button_spacing) #Centramos los botones
 
-button1 = Button(Width//2 - button_width//2, button_start_y, button_width, button_height, "Resolver por BFS", BFS)
-button2 = Button(Width//2 - button_width//2, button_start_y + button_height + button_spacing, button_width, button_height, "Resolver por A*", A_ast)
-button3 = Button(Width//2 - button_width//2, button_start_y + (button_height + button_spacing) * 2, button_width, button_height, "BFS vs A*", compare_algorithms)
-button4 = Button(Width//2 - button_width//2, button_start_y + (button_height + button_spacing) * 3, button_width, button_height, "Salir", Salir)
 
-buttons = [button1, button2, button3, button4]
+active_func = True
+menu, op1, op2, op3, op4 = 0, 1, 2, 3, 4
+current_state = menu
 
-#Bucle del pygame
-game_state = True
-while game_state:
+def menu_principal():
+  global current_state
 
-  #Detectamos los eventos
+  draw_text("Puzzle 8", font_title, Black, Screen, Width//2, 100)
+  opa = pygame.Rect(Width//2-150, 200, 300, 60)
+  opb = pygame.Rect(Width//2-150, 280, 300, 60)
+  #opc = pygame.Rect(Width//2-150, 360, 300, 60)
+  opd = pygame.Rect(Width//2-150, 360, 300, 60)
+
+  draw_button("BFS", font_small, White, Blue, Screen, opa)
+  draw_button("A*", font_small, White, Blue, Screen, opb)
+  #draw_button("BFS vs A*", font_small, White, Blue, Screen, opc)
+  draw_button("Salir", font_small, White, Blue, Screen, opd)
+
   for ev in pygame.event.get():
     if ev.type == pygame.QUIT:
-      game_state = False
-    
-    for button in buttons:
-      button.handle_event(ev)
-  
-  #Dibujar en pantalla
+      pygame.quit()
+      exit()
+    if ev.type == pygame.MOUSEBUTTONDOWN:
+      if opa.collidepoint(ev.pos):
+        current_state = op1
+      elif opb.collidepoint(ev.pos):
+        current_state = op2
+      #elif opc.collidepoint(ev.pos):
+       # current_state = op3
+      elif opd.collidepoint(ev.pos):
+        current_state = op4
+
+click = False
+running = True
+while running:
   Screen.fill(White)
 
-  #Dibujar titulo
-  draw_text("PUZZLE 8", font_title, Blue, Screen, Width//2, Height//4)
-
-  #Dibujar botones
-  for button in buttons:
-    button.draw(Screen)
+  if current_state == menu:
+    menu_principal()
+  elif current_state == op1:
+    BFS(active_func)
+    pygame.quit()
+    exit()
+    active_func = False
+  elif current_state == op2:
+    A_ast(active_func)
+    pygame.quit()
+    exit()
+    active_func = False
+  elif current_state == op3:
+    compare_algorithms(active_func)
+    active_func = False
+  elif current_state == op4:
+    Salir()
   
   pygame.display.flip()
-
-
-
-
-
-#cerrar pygame
-pygame.quit()
+  
